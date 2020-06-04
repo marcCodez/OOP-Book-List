@@ -27,6 +27,40 @@ row.innerHTML = `
 list.appendChild(row);
 }
 
+// Show Alert
+UI.prototype.showAlert = function(message, alertClassName) {
+    // Now we want to construct the element
+    // Create div
+    const div = document.createElement('div');
+    // Add classes
+    div.className = `alert ${alertClassName}`;
+    // Add Text
+    div.appendChild(document.createTextNode(message));
+    // Get parent
+    const container = document.querySelector('.container');
+    // Get form
+    const form = document.querySelector('#book-form');
+
+    // Insert alert
+    // insertBefore takes arg1: what we want to insert, arg2: what we want to insert before
+    container.insertBefore(div, form)
+
+    // Timeout after 3 sec, setTimeout is a property of the window object
+    setTimeout(function(){
+        document.querySelector('.alert').remove();
+    }, 3000);
+}
+
+// Delete Book
+UI.prototype.deleteBook = function(target) {
+    if (target.className === 'delete') {
+        //parentElement twice because the target element is situated inside a td tag then one level up is a tr tag
+        // This is basically DOM traversing
+        target.parentElement.parentElement.remove();
+    }
+}
+
+
 // Clear Fields
 UI.prototype.clearFields = function(){
     document.querySelector('#title').value = '';
@@ -34,7 +68,7 @@ UI.prototype.clearFields = function(){
     document.querySelector('#isbn').value = '';
 }
 
-// Event Listeners
+// Event Listener for add book
 document.querySelector('#book-form').addEventListener('submit', 
 function(e){
 const title = document.querySelector("#title").value,
@@ -47,11 +81,40 @@ const title = document.querySelector("#title").value,
     // Instantiate UI
     const ui = new UI()
 
-    // Add book to list
+    // Validate - so submitted will not add empty inputs
+    if (title === '' || author === '' || isbn === '') {
+        // Error Alert, second argument with class error as we created the css on index.html
+        ui.showAlert('Please fill in all fields', 'error');
+    } else {
+          // Add book to list
     ui.addBookToList(book);
+
+    // Show success
+    ui.showAlert('Successfully added a book!', 'success');
 
     // Clear fields
     ui.clearFields();
+    }
+
+  
     //stop the form from submitting, the initial behviour
+    e.preventDefault();
+})
+
+
+// Event delegation = if we have something thats going to show up more than once with the same class
+// or something that is not there when the page loads but its dynamically added
+// Event listener for delete - using event delegation
+document.querySelector('#book-list').addEventListener('click', function(e){
+   
+    // Instantiate UI like we did for add book to access the prototype
+    const ui = new UI();
+
+    // Delete book
+    ui.deleteBook(e.target)
+
+    // Show message
+    ui.showAlert('Book Removed!', 'success');
+    
     e.preventDefault();
 })
