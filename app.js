@@ -111,10 +111,14 @@ document.querySelector('#book-list').addEventListener('click', function(e){
     const ui = new UI();
 
     // Delete book
-    ui.deleteBook(e.target)
+    ui.deleteBook(e.target);
 
+    // added this if statement to remove the removed message bug
+    if (e.target.className === 'delete') {
     // Show message
     ui.showAlert('Book Removed!', 'success');
+    }
+            
     
     e.preventDefault();
-})
+});
